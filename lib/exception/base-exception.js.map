@@ -1,0 +1,1 @@
+{"version":3,"file":"base-exception.js","sourceRoot":"","sources":["../../src/exception/base-exception.ts"],"names":[],"mappings":";;;AAAA,2CAAwC;AAExC,MAAsB,aAAa;IAEjC;QACE,IAAI,CAAC,MAAM,GAAG,IAAI,eAAM,CAAC,IAAI,CAAC,WAAW,CAAC,IAAI,CAAC,CAAC;IAClD,CAAC;CACF;AALD,sCAKC"}
