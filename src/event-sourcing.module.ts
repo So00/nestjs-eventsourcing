@@ -41,7 +41,6 @@ export class EventSourcingModule {
   }
 
   static async forRootAsync(options: RootAsyncOptions): Promise<DynamicModule> {
-    console.log("root");
     return {
       module: EventSourcingModule,
       imports: options.imports,
@@ -49,7 +48,6 @@ export class EventSourcingModule {
         {
           provide: SEQUELIZE_EVENTSOURCING,
           useFactory: async (...args: typeof options.inject) => {
-            console.log("sequelize");
             const compiledOptions = await options.useFactory(...args);
             return EventSourcingModule.createEventstore(compiledOptions);
           },
