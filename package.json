@@ -1,7 +1,7 @@
 {
   "name": "@atournerie/nestjs-eventsourcing",
   "package-name": "@atournerie/nestjs-eventsourcing",
-  "version": "0.0.3",
+  "version": "0.0.8",
   "description": "",
   "author": "",
   "license": "UNLICENSED",
@@ -9,8 +9,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "prebuild": "rimraf lib",
-    "build": "pnpm prebuild && tsc",
-    "publish": "pnpm publish --access public"
+    "build": "pnpm prebuild && tsc"
   },
   "dependencies": {
     "sequelize": "^6.30.0",

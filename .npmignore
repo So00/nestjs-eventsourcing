@@ -4,3 +4,4 @@ src
 .npmrc
 .prettierrc
 tsconfig.json
+.env
