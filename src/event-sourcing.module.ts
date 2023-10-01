@@ -6,12 +6,13 @@ import { createEventSourcingProviders } from "./eventstore.provider";
 import { Sequelize } from "sequelize-typescript";
 import { RootAsyncOptions } from "./interface/root-async-options";
 import { Event, eventsProvider, Snapshot } from "./entities/event";
-import { ApplicationEvents } from "./application-events";
+import {
+  ApplicationEvents,
+  ApplicationEventsConstructor,
+} from "./application-events";
 import { ProjectionClasses } from "./projection-classes";
 
 export const SEQUELIZE_EVENTSOURCING = Symbol("SEQUELIZE_EVENTSOURCING");
-
-let imports = [];
 
 @Module({})
 export class EventSourcingModule {
@@ -40,7 +41,7 @@ export class EventSourcingModule {
   }
 
   static async forRootAsync(options: RootAsyncOptions): Promise<DynamicModule> {
-    imports = options.imports;
+    console.log("root");
     return {
       module: EventSourcingModule,
       imports: options.imports,
@@ -48,6 +49,7 @@ export class EventSourcingModule {
         {
           provide: SEQUELIZE_EVENTSOURCING,
           useFactory: async (...args: typeof options.inject) => {
+            console.log("sequelize");
             const compiledOptions = await options.useFactory(...args);
             return EventSourcingModule.createEventstore(compiledOptions);
           },
@@ -57,7 +59,9 @@ export class EventSourcingModule {
           provide: ApplicationEvents,
           useFactory: async (...args: typeof options.inject) => {
             const compiledOptions = await options.useFactory(...args);
-            return new ApplicationEvents(compiledOptions.events);
+            return new ApplicationEvents(
+              compiledOptions.events || ({} as ApplicationEventsConstructor),
+            );
           },
           inject: options.inject,
         },
@@ -65,8 +69,9 @@ export class EventSourcingModule {
           provide: ProjectionClasses,
           useFactory: async (...args: typeof options.inject) => {
             const compiledOptions = await options.useFactory(...args);
-            return new ProjectionClasses(compiledOptions.projections);
+            return new ProjectionClasses(compiledOptions.projections || []);
           },
+          inject: options.inject,
         },
         EventStore,
         ...eventsProvider,
@@ -80,7 +85,7 @@ export class EventSourcingModule {
     const providers = createEventSourcingProviders();
     return {
       module: EventSourcingModule,
-      imports: [CqrsModule, ...imports],
+      imports: [CqrsModule],
       providers: providers,
       exports: providers,
     };
