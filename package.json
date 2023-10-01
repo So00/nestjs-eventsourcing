@@ -1,7 +1,7 @@
 {
   "name": "@atournerie/nestjs-eventsourcing",
   "package-name": "@atournerie/nestjs-eventsourcing",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "author": "",
   "license": "UNLICENSED",
