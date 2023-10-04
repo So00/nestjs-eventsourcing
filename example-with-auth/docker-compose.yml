@@ -1,0 +1,56 @@
+version: '3.7'
+
+services:
+  permission-hub:
+    container_name: permission-hub
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 3000:3000
+      - 9229:9229
+    command: pnpm run start:debug
+    env_file:
+      - .env
+    networks:
+      - permissionhub
+    depends_on:
+      - redis
+      - mariadb
+
+  redis:
+    container_name: redis
+    image: redis:5
+    networks:
+      - permissionhub
+
+  mariadb:
+    image: docker.io/bitnami/mariadb:10.3-debian-10
+    container_name: permission-hub-db
+    environment:
+      - MARIADB_USER=user
+      - MARIADB_PASSWORD=password
+      - MARIADB_DATABASE=permissionhub
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - permissionhubdata:/bitnami/mariadb
+#      - ./init:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
+    networks:
+      - permissionhub
+
+  adminer:
+    image: adminer
+    ports:
+      - 8082:8080
+    networks:
+      - permissionhub
+
+networks:
+  permissionhub:
+volumes:
+  permissionhubdata:
+    driver: local

@@ -1,7 +1,6 @@
 import { Module, DynamicModule } from "@nestjs/common";
 import { EventSourcingOptions } from "./interface/event-sourcing";
 import { CqrsModule } from "@nestjs/cqrs";
-import { EventStore } from "./eventstore";
 import { createEventSourcingProviders } from "./eventstore.provider";
 import { Sequelize } from "sequelize-typescript";
 import { RootAsyncOptions } from "./interface/root-async-options";
@@ -10,9 +9,10 @@ import {
   ApplicationEvents,
   ApplicationEventsConstructor,
 } from "./application-events";
-import { ProjectionClasses } from "./projection-classes";
 
 export const SEQUELIZE_EVENTSOURCING = Symbol("SEQUELIZE_EVENTSOURCING");
+
+const providers = createEventSourcingProviders();
 
 @Module({})
 export class EventSourcingModule {
@@ -26,16 +26,18 @@ export class EventSourcingModule {
         },
         {
           provide: ApplicationEvents,
-          useValue: new ApplicationEvents(options.events),
+          useFactory: () => {
+            const applicationEvents = new ApplicationEvents();
+            applicationEvents.addEvents(
+              options.events || ({} as ApplicationEventsConstructor),
+            );
+            return applicationEvents;
+          },
         },
-        {
-          provide: ProjectionClasses,
-          useValue: new ProjectionClasses(options.projections),
-        },
-        EventStore,
+        ...providers,
         ...eventsProvider,
       ],
-      exports: [EventStore, ...eventsProvider],
+      exports: [...eventsProvider, ...providers],
       global: true,
     };
   }
@@ -57,35 +59,28 @@ export class EventSourcingModule {
           provide: ApplicationEvents,
           useFactory: async (...args: typeof options.inject) => {
             const compiledOptions = await options.useFactory(...args);
-            return new ApplicationEvents(
+            const applicationEvents = new ApplicationEvents();
+            applicationEvents.addEvents(
               compiledOptions.events || ({} as ApplicationEventsConstructor),
             );
+            return applicationEvents;
           },
           inject: options.inject,
         },
-        {
-          provide: ProjectionClasses,
-          useFactory: async (...args: typeof options.inject) => {
-            const compiledOptions = await options.useFactory(...args);
-            return new ProjectionClasses(compiledOptions.projections || []);
-          },
-          inject: options.inject,
-        },
-        EventStore,
+        ...providers,
         ...eventsProvider,
       ],
-      exports: [EventStore, ...eventsProvider],
+      exports: [...eventsProvider, ...providers],
       global: true,
     };
   }
 
   static forFeature(): DynamicModule {
-    const providers = createEventSourcingProviders();
     return {
       module: EventSourcingModule,
       imports: [CqrsModule],
-      providers: providers,
-      exports: providers,
+      providers: [...providers, ...eventsProvider, ApplicationEvents],
+      exports: [...providers, ...eventsProvider, ApplicationEvents],
     };
   }
 

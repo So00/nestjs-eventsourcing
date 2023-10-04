@@ -4,7 +4,11 @@ import { ProjectionClass } from "./interface/projection-class";
 
 @Injectable()
 export class ProjectionClasses {
-  constructor(private readonly projectionClasses: ProjectionClass[] = []) {}
+  private readonly projectionClasses: ProjectionClass[] = [];
+
+  addProjectionClass(projectionClasses: ProjectionClass) {
+    this.projectionClasses.push(projectionClasses);
+  }
 
   runProjectionClass(event: StorableEvent) {
     for (const projectionClass of this.projectionClasses) {

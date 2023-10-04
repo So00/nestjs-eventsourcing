@@ -6,7 +6,11 @@ export type ApplicationEventsConstructor = Record<"string", StorableEvent>;
 
 @Injectable()
 export class ApplicationEvents {
-  constructor(private readonly appEvents: ApplicationEventsConstructor) {}
+  private appEvents: ApplicationEventsConstructor;
+
+  addEvents(events: ApplicationEventsConstructor) {
+    this.appEvents = { ...this.appEvents, ...events };
+  }
 
   get events(): Record<"string", StorableEvent> {
     return this.appEvents;

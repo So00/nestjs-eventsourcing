@@ -35,15 +35,15 @@ export class Snapshot extends Model<Snapshot> {
 }
 
 export const EVENT_REPOSITORY = Symbol("EventRepository");
-export const SNAPSHOT_REPOSITORY = Symbol("EventRepository");
+export const SNAPSHOT_REPOSITORY = Symbol("EventSnapshotRepository");
 
 export const eventsProvider = [
   {
     provide: EVENT_REPOSITORY,
-    useValue: Event
+    useValue: Event,
   },
   {
     provide: SNAPSHOT_REPOSITORY,
-    useValue: Snapshot
+    useValue: Snapshot,
   },
 ];

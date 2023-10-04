@@ -1,3 +1,6 @@
+import { CommandBus, EventBus } from "@nestjs/cqrs";
 import { StoreEventBus } from "./store-event-bus";
 import { StoreEventPublisher } from "./store-event-publisher";
-export declare function createEventSourcingProviders(): (typeof StoreEventBus | typeof StoreEventPublisher)[];
+import { ProjectionClasses } from "./projection-classes";
+import { EventStore } from "./eventstore";
+export declare function createEventSourcingProviders(): (typeof ProjectionClasses | typeof EventStore | typeof StoreEventBus | typeof StoreEventPublisher | typeof EventBus | typeof CommandBus)[];
