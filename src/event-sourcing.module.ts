@@ -1,6 +1,5 @@
 import { Module, DynamicModule } from "@nestjs/common";
 import { EventSourcingOptions } from "./interface/event-sourcing";
-import { CqrsModule } from "@nestjs/cqrs";
 import { createEventSourcingProviders } from "./eventstore.provider";
 import { Sequelize } from "sequelize-typescript";
 import { RootAsyncOptions } from "./interface/root-async-options";
@@ -9,6 +8,7 @@ import {
   ApplicationEvents,
   ApplicationEventsConstructor,
 } from "./application-events";
+import { CqrsModule } from "@nestjs/cqrs";
 
 export const SEQUELIZE_EVENTSOURCING = Symbol("SEQUELIZE_EVENTSOURCING");
 
@@ -80,7 +80,7 @@ export class EventSourcingModule {
       module: EventSourcingModule,
       imports: [CqrsModule],
       providers: [...providers, ...eventsProvider, ApplicationEvents],
-      exports: [...providers, ...eventsProvider, ApplicationEvents],
+      exports: [...providers, ...eventsProvider, ApplicationEvents, CqrsModule],
     };
   }
 
