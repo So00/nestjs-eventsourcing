@@ -13,6 +13,7 @@ import { CqrsModule } from "@nestjs/cqrs";
 export const SEQUELIZE_EVENTSOURCING = Symbol("SEQUELIZE_EVENTSOURCING");
 
 const providers = createEventSourcingProviders();
+const applicationEvents = new ApplicationEvents();
 
 @Module({})
 export class EventSourcingModule {
@@ -27,7 +28,6 @@ export class EventSourcingModule {
         {
           provide: ApplicationEvents,
           useFactory: () => {
-            const applicationEvents = new ApplicationEvents();
             applicationEvents.addEvents(
               options.events || ({} as ApplicationEventsConstructor),
             );
@@ -59,7 +59,6 @@ export class EventSourcingModule {
           provide: ApplicationEvents,
           useFactory: async (...args: typeof options.inject) => {
             const compiledOptions = await options.useFactory(...args);
-            const applicationEvents = new ApplicationEvents();
             applicationEvents.addEvents(
               compiledOptions.events || ({} as ApplicationEventsConstructor),
             );
@@ -79,8 +78,17 @@ export class EventSourcingModule {
     return {
       module: EventSourcingModule,
       imports: [CqrsModule],
-      providers: [...providers, ...eventsProvider, ApplicationEvents],
-      exports: [...providers, ...eventsProvider, ApplicationEvents, CqrsModule],
+      providers: [
+        ...providers,
+        ...eventsProvider,
+        { provide: ApplicationEvents, useValue: applicationEvents },
+      ],
+      exports: [
+        ...providers,
+        ...eventsProvider,
+        { provide: ApplicationEvents, useValue: applicationEvents },
+        CqrsModule,
+      ],
     };
   }
 

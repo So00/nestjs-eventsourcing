@@ -36,7 +36,7 @@ export class EventStore {
   }
 
   protected async getLastSnapshot(stream: string) {
-    console.log(stream);
+    throw new Error("Not implemented");
   }
 
   public async getEvent(uuid: string): Promise<StorableEvent> {
