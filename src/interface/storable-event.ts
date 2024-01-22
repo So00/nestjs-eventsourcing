@@ -7,6 +7,7 @@ export abstract class StorableEvent implements IEvent {
   uuid: string;
   name: string;
   payload: any;
+  createdAt?: Date;
 
   protected constructor(payload, uuid?: undefined) {
     this.name = this.constructor.name;

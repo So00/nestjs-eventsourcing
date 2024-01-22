@@ -47,13 +47,15 @@ export class EventStore {
   public async storeEvent<T extends StorableEvent>(event: T): Promise<void> {
     const { aggregate, name, id, payload, uuid } = event;
     try {
-      await Event.create({
+      const {
+        dataValues: { createdAt },
+      } = await Event.create({
         uuid,
         stream: this.getStreamName(aggregate, id),
         type: name,
         data: payload,
       });
-      this.projectionClasses.runProjectionClass(event);
+      this.projectionClasses.runProjectionClass({ ...event, createdAt });
     } catch (error) {
       console.warn(error);
     }
